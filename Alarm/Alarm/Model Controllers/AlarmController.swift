@@ -14,11 +14,11 @@ class AlarmController {
     
     var alarms: [Alarm] = []
     
-    let mockAlarms: [Alarm] = [Alarm(fireDate: Date(), name: "Wake up", enabled: true), Alarm(fireDate: Date(), name: "Go to school", enabled: true), Alarm(fireDate: Date(), name: "Go to sleep", enabled: false)]
-    
-    init() {
-        self.alarms = self.mockAlarms
-    }
+    //    let mockAlarms: [Alarm] = [Alarm(fireDate: Date(), name: "Wake up", enabled: true), Alarm(fireDate: Date(), name: "Go to school", enabled: true), Alarm(fireDate: Date(), name: "Go to sleep", enabled: false)]
+    //
+    //    init() {
+    //        self.alarms = self.mockAlarms
+    //    }
     
     func addAlarm(fireDate: Date, name: String, enabled: Bool) {
         let newAlarm = Alarm(fireDate: fireDate, name: name, enabled: enabled)
@@ -37,6 +37,15 @@ class AlarmController {
         guard let indexPathToDelete = alarms.firstIndex(of: alarm) else { return }
         self.alarms.remove(at: indexPathToDelete)
         AlarmController.sharedInstance.saveToPersistentStore()
+    }
+    
+    func toggleEnabled(for alarm: Alarm) {
+        if alarm.enabled == true {
+            return alarm.enabled = false
+        } else {
+            return alarm.enabled = true
+        }
+        
     }
     
     //MARK: - Persistance

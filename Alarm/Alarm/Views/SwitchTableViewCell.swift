@@ -8,15 +8,26 @@
 
 import UIKit
 
+protocol SwitchTableViewDelegate: class {
+    func switchCellSwitchValueChanged(cell: SwitchTableViewCell)
+}
+
 class SwitchTableViewCell: UITableViewCell {
     
-    var alarm: Alarm?
+    weak var delegate: SwitchTableViewDelegate?
+    
+    var alarm: Alarm? {
+        didSet {
+            updateViews()
+        }
+    }
     
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var alarmSwitch: UISwitch!
     
     @IBAction func switchValueChanged(_ sender: Any) {
+        delegate?.switchCellSwitchValueChanged(cell: self)
     }
     
     func updateViews() {

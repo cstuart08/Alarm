@@ -13,6 +13,11 @@ class AlarmListTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
+    }
 
     // MARK: - Table view data source
 
@@ -22,9 +27,11 @@ class AlarmListTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "AlarmListCell", for: indexPath)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "AlarmListCell", for: indexPath) as? SwitchTableViewCell else { return UITableViewCell() }
+        
         let specificAlarm = AlarmController.sharedInstance.alarms[indexPath.row]
-        cell.alarm = alarm
+        cell.alarm = specificAlarm
+        cell.delegate = self
         return cell
     }
 
@@ -39,6 +46,21 @@ class AlarmListTableViewController: UITableViewController {
     // MARK: - Navigation
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let destinationVC = segue.destination as? AlarmDetailTableViewController else { return }
+        if segue.identifier == "AlarmListToAlarmDetail" {
+            if let indexPath = tableView.indexPathForSelectedRow {
+                let alarm = AlarmController.sharedInstance.alarms[indexPath.row]
+                destinationVC.alarm = alarm
+            }
+        }
+    }
+}
 
+extension AlarmListTableViewController: SwitchTableViewDelegate {
+    func switchCellSwitchValueChanged(cell: SwitchTableViewCell) {
+        guard let alarm = cell.alarm,
+        let indexPath = tableView.indexPath(for: cell) else { return }
+        AlarmController.sharedInstance.toggleEnabled(for: alarm)
+        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
 }

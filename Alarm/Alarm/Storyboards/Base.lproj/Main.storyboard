@@ -71,7 +71,7 @@
                                     <outlet property="alarmSwitch" destination="dTd-RM-8qy" id="3kb-hW-yel"/>
                                     <outlet property="nameLabel" destination="xvt-vL-PdG" id="ezf-c4-lfJ"/>
                                     <outlet property="timeLabel" destination="BmL-hw-JKm" id="OGT-rb-ni7"/>
-                                    <segue destination="uka-TE-NaL" kind="show" id="eQh-To-aRb"/>
+                                    <segue destination="uka-TE-NaL" kind="show" identifier="AlarmListToAlarmDetail" id="eQh-To-aRb"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -83,7 +83,7 @@
                     <navigationItem key="navigationItem" id="wMw-ne-mrC">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="1Wh-Ua-FYq">
                             <connections>
-                                <segue destination="uka-TE-NaL" kind="show" id="NnL-Cf-hQD"/>
+                                <segue destination="uka-TE-NaL" kind="show" identifier="AddNewAlarm" id="NnL-Cf-hQD"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -224,6 +224,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="eQh-To-aRb"/>
+        <segue reference="NnL-Cf-hQD"/>
     </inferredMetricsTieBreakers>
 </document>
