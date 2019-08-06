@@ -12,20 +12,11 @@ class AlarmListTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let alertController = UIAlertController(title: "Alert!", message: "Do you want to coninue?", preferredStyle: .alert)
-        
-        let yesContinue = UIAlertAction(title: "Yes", style: .default) { (_) in
-            
-        }
-        
-        alertController.addAction(yesContinue)
-        
-        self.present(alertController, animated: true, completion: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        AlarmController.sharedInstance.loadFromPersistentStore()
         tableView.reloadData()
     }
     
@@ -67,10 +58,10 @@ class AlarmListTableViewController: UITableViewController {
 }
 
 extension AlarmListTableViewController: SwitchTableViewDelegate {
-    func switchCellSwitchValueChanged(cell: SwitchTableViewCell) {
+    func switchCellSwitchValueChanged(cell: SwitchTableViewCell, isOn: Bool) {
         guard let alarm = cell.alarm,
             let indexPath = tableView.indexPath(for: cell) else { return }
-        AlarmController.sharedInstance.toggleEnabled(for: alarm)
+        AlarmController.sharedInstance.toggleEnabled(for: alarm, enabled: isOn)
         tableView.reloadRows(at: [indexPath], with: .automatic)
     }
 }

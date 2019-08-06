@@ -9,7 +9,7 @@
 import UIKit
 
 protocol SwitchTableViewDelegate: class {
-    func switchCellSwitchValueChanged(cell: SwitchTableViewCell)
+    func switchCellSwitchValueChanged(cell: SwitchTableViewCell, isOn: Bool)
 }
 
 class SwitchTableViewCell: UITableViewCell {
@@ -27,7 +27,7 @@ class SwitchTableViewCell: UITableViewCell {
     @IBOutlet weak var alarmSwitch: UISwitch!
     
     @IBAction func switchValueChanged(_ sender: Any) {
-        delegate?.switchCellSwitchValueChanged(cell: self)
+        delegate?.switchCellSwitchValueChanged(cell: self, isOn: alarmSwitch.isOn)
     }
     
     func updateViews() {
@@ -41,4 +41,7 @@ class SwitchTableViewCell: UITableViewCell {
             alarmSwitch.isOn = false
         }
     }
+}
+
+extension SwitchTableViewCell: AlarmScheduler {
 }

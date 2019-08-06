@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 class AlarmDetailTableViewController: UITableViewController {
     
@@ -14,22 +15,37 @@ class AlarmDetailTableViewController: UITableViewController {
     @IBOutlet weak var alarmNameTextField: UITextField!
     @IBOutlet weak var alarmEnableDisableButton: UIButton!
     
-
+    var alarm: Alarm? {
+        didSet {
+            loadViewIfNeeded()
+            updateViews()
+        }
+    }
+    
+    var newAlarm: Alarm?
+    
+    var alarmIsOn: Bool = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-}
+    }
     
     @IBAction func alarmEnableDisableButtonTapped(_ sender: Any) {
-        if alarm?.enabled == true {
-            alarmEnableDisableButton.setTitle("ALARM IS OFF", for: .normal)
-            alarm?.enabled = false
-            alarmIsOn = false
-            AlarmController.sharedInstance.saveToPersistentStore()
-        } else {
+        
+        // toggle the button * alarmIsOn is keeping track of the state of the button
+        alarmIsOn.toggle()
+        // Updates button to reflect the state of alarm status.
+        if alarmIsOn {
             alarmEnableDisableButton.setTitle("ALARM IS ON", for: .normal)
-            alarm?.enabled = true
-            alarmIsOn = true
-            AlarmController.sharedInstance.saveToPersistentStore()
+//            AlarmController.sharedInstance.scheduleNotifications(for: alarm)
+        } else {
+            // Updates button to reflect the state of alarm status.
+            alarmEnableDisableButton.setTitle("ALARM IS OFF", for: .normal)
+        }
+        
+        
+        if let alarm = alarm {
+            AlarmController.sharedInstance.toggleEnabled(for: alarm, enabled: alarmIsOn)
         }
     }
     
@@ -45,15 +61,6 @@ class AlarmDetailTableViewController: UITableViewController {
         navigationController?.popViewController(animated: true)
     }
     
-    var alarm: Alarm? {
-        didSet {
-            loadViewIfNeeded()
-            updateViews()
-        }
-    }
-    
-    var alarmIsOn: Bool = true
-    
     func updateViews() {
         guard let alarm = alarm else { return }
         alarmIsOn = alarm.enabled
@@ -65,6 +72,13 @@ class AlarmDetailTableViewController: UITableViewController {
         } else if alarm.enabled == false {
             alarmEnableDisableButton.setTitle("ALARM IS OFF", for: .normal)
             alarmIsOn = false
+        } else {
+            alarmEnableDisableButton.setTitle("ALARM IS ON", for: .normal)
+            alarmIsOn = true
         }
     }
+}
+
+extension AlarmDetailTableViewController: AlarmScheduler {
+    
 }

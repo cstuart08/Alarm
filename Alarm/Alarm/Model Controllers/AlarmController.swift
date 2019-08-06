@@ -7,8 +7,45 @@
 //
 
 import Foundation
+import UserNotifications
 
-class AlarmController {
+protocol AlarmScheduler: class {
+    func scheduleNotifications(for alarm: Alarm)
+    func cancelNotifications(for alarm: Alarm)
+}
+
+extension AlarmScheduler {
+    func scheduleNotifications(for alarm: Alarm) {
+        let content = UNMutableNotificationContent()
+        content.title = "Title"
+        content.body = "Body"
+        content.sound = UNNotificationSound.default
+        
+        let calendar = Calendar.current
+        
+        var dateComponent = DateComponents()
+        dateComponent.hour = calendar.component(.hour, from: alarm.fireDate)
+        dateComponent.minute = calendar.component(.minute, from: alarm.fireDate)
+        dateComponent.second = 0
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponent, repeats: true)
+        
+        let identifier = alarm.uuid
+        
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request) { (_) in
+            print("User asked to get a local notification.")
+        }
+    }
+    
+    func cancelNotifications(for alarm: Alarm) {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [alarm.uuid])
+        print("User cancelled local notification.")
+    }
+}
+
+class AlarmController: AlarmScheduler {
     
     static let sharedInstance = AlarmController()
     
@@ -23,6 +60,7 @@ class AlarmController {
     func addAlarm(fireDate: Date, name: String, enabled: Bool) {
         let newAlarm = Alarm(fireDate: fireDate, name: name, enabled: enabled)
         AlarmController.sharedInstance.alarms.append(newAlarm)
+        newAlarm.enabled ? scheduleNotifications(for: newAlarm) : cancelNotifications(for: newAlarm)
         AlarmController.sharedInstance.saveToPersistentStore()
     }
     
@@ -30,6 +68,7 @@ class AlarmController {
         alarm.name = name
         alarm.fireDate = fireDate
         alarm.enabled = enabled
+        alarm.enabled ? scheduleNotifications(for: alarm) : cancelNotifications(for: alarm)
         AlarmController.sharedInstance.saveToPersistentStore()
     }
     
@@ -39,13 +78,10 @@ class AlarmController {
         AlarmController.sharedInstance.saveToPersistentStore()
     }
     
-    func toggleEnabled(for alarm: Alarm) {
-        if alarm.enabled == true {
-            return alarm.enabled = false
-        } else {
-            return alarm.enabled = true
-        }
-        
+    func toggleEnabled(for alarm: Alarm, enabled: Bool) {
+        alarm.enabled = enabled
+        alarm.enabled ? scheduleNotifications(for: alarm) : cancelNotifications(for: alarm)
+        saveToPersistentStore()
     }
     
     //MARK: - Persistance
